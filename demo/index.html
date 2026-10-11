@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="zh-CN" data-codex-glass-fixture="1">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; font-src 'self'">
+  <title>Codex Glass · 独立效果预览</title>
+  <style>
+    :root { color-scheme: dark; --ink:#e9f0ef; --muted:#a5b5b9; --line:rgba(221,239,242,.13); --surface:#16232a; --side:#122028; --accent:#93d1ce; --chip:rgba(160,209,211,.08); --card:rgba(151,185,193,.07); font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans CJK SC",sans-serif; }
+    :root[data-fixture-theme="light"] { color-scheme:light; --ink:#263d43; --muted:#60777b; --line:rgba(34,71,78,.14); --surface:#eef3f1; --side:#e3eeec; --accent:#236863; --chip:rgba(23,84,92,.06); --card:rgba(30,80,84,.045); }
+    * { box-sizing:border-box; }
+    html,body { min-height:100%; margin:0; }
+    body { color:var(--ink); font-size:14px; line-height:1.65; background:#254750; }
+    body::before { content:""; position:fixed; inset:0; z-index:-1; background:radial-gradient(ellipse at 76% 18%,rgba(212,187,131,.89),transparent 42%),radial-gradient(ellipse at 15% 30%,#729ca0,transparent 51%),radial-gradient(ellipse at 74% 105%,#123440,transparent 59%),linear-gradient(135deg,#36515c,#517575 58%,#bead80); }
+    html.native-preview,html.native-preview body { background:transparent!important; }
+    html.native-preview body::before { display:none; }
+    button,input,textarea { font:inherit; }
+    button { cursor:pointer; color:inherit; }
+    button:focus-visible,input:focus-visible,textarea:focus-visible { outline:2px solid var(--accent); outline-offset:4px; }
+    button { border:1px solid var(--line); border-radius:9px; background:var(--chip); padding:8px 12px; }
+    button:hover { background:rgba(137,180,184,.17); }
+    button.primary { background:var(--accent); color:#123b3c; border-color:transparent; font-weight:650; }
+    [hidden] { display:none!important; }
+    .page { width:min(1220px,calc(100% - 64px)); margin:29px auto 24px; }
+    .identity { display:flex; align-items:center; justify-content:space-between; gap:16px; margin:0 4px 14px; color:#eef7f4; }
+    .identity strong { font-size:15px; letter-spacing:.5px; }
+    .identity span { font-size:11px; letter-spacing:2px; opacity:.8; }
+    .notice { background:rgba(16,36,42,.82); border:1px solid rgba(210,223,203,.23); color:#e5eee8; border-radius:12px; padding:11px 15px; margin-bottom:16px; font-size:12px; }
+    .notice strong { color:#f4e3b9; font-weight:600; }
+    .window { display:grid; grid-template-columns:214px minmax(0,1fr); min-height:594px; border:1px solid rgba(225,241,239,.32); border-radius:18px; overflow:hidden; box-shadow:0 24px 90px rgba(7,27,34,.24),inset 0 1px 0 rgba(255,255,255,.2); }
+    .sidebar { background:var(--side); border-right:1px solid var(--line); padding:24px 15px 17px; display:flex; flex-direction:column; gap:8px; }
+    .sidebar-heading { padding:0 11px 25px; font-size:15px; font-weight:650; display:flex; gap:9px; align-items:center; }
+    .logo { width:23px; height:23px; border:1px solid var(--accent); border-radius:8px 3px 8px 3px; display:inline-block; transform:rotate(-10deg); background:linear-gradient(140deg,rgba(161,233,222,.36),transparent); }
+    .nav-item { display:flex; align-items:center; gap:10px; border:0; text-align:left; width:100%; padding:10px 11px; background:transparent; }
+    .nav-item[aria-pressed="true"] { background:var(--chip); }
+    .nav-icon { font-size:17px; width:20px; text-align:center; color:var(--accent); }
+    .side-label { font-size:10px; letter-spacing:1.8px; color:var(--muted); margin:25px 11px 3px; }
+    .sample { padding:9px 11px; font-size:12px; color:var(--muted); border-left:1px solid var(--line); margin:0 0 0 20px; }
+    .side-foot { margin-top:auto; padding:30px 11px 0; color:var(--muted); font-size:11px; }
+    .live-dot { width:6px; height:6px; border-radius:50%; display:inline-block; margin-right:7px; background:var(--accent); }
+    .MainContentSurface { background:var(--surface); display:flex; flex-direction:column; min-width:0; }
+    .glass-topbar { min-height:64px; display:flex; align-items:center; justify-content:space-between; padding:0 28px; border-bottom:1px solid var(--line); }
+    .crumb { font-size:12px; color:var(--muted); }
+    .crumb b { color:var(--ink); font-weight:500; margin-left:10px; }
+    .menu-wrap { position:relative; }
+    .icon-button { border:0; padding:4px 10px; background:transparent; font-size:20px; line-height:1.1; }
+    .menu { position:absolute; top:36px; right:0; min-width:205px; border:1px solid var(--line); border-radius:12px; background:var(--surface); padding:7px; box-shadow:0 12px 30px #06151c30; z-index:3; }
+    .menu button { display:block; width:100%; text-align:left; border:0; background:transparent; }
+    .conversation { width:min(720px,100%); padding:33px 36px 20px; margin:0 auto; flex:1; }
+    .eyebrow { font-size:10px; letter-spacing:2px; color:var(--accent); margin-bottom:10px; }
+    h1 { font-size:28px; font-weight:500; letter-spacing:-.5px; line-height:1.3; margin:0 0 9px; }
+    .subtitle { font-size:12px; color:var(--muted); margin:0 0 27px; }
+    .message { border-top:1px solid var(--line); padding-top:20px; margin-top:21px; }
+    .speaker { display:flex; align-items:center; gap:8px; font-weight:600; font-size:12px; margin-bottom:8px; }
+    .avatar { border:1px solid var(--line); border-radius:7px; width:23px; height:23px; display:grid; place-items:center; font-size:10px; font-weight:500; color:var(--accent); }
+    .message p { margin:0 0 11px 31px; font-size:13px; line-height:1.9; }
+    pre { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 15px; margin:14px 0 0 31px; font-size:11px; overflow:auto; line-height:1.9; }
+    code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+    .code-comment { color:var(--muted); }
+    .code-key { color:var(--accent); }
+    .composer-wrap { width:min(720px,100%); padding:8px 36px 24px; margin:0 auto; }
+    .composer { border:1px solid var(--line); background:var(--chip); border-radius:13px; padding:11px 13px 9px; }
+    textarea { resize:vertical; min-height:50px; max-height:130px; background:transparent; border:0; color:var(--ink); width:100%; outline:none; font-size:12px; }
+    textarea::placeholder { color:var(--muted); }
+    .composer-footer { display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:10px; color:var(--muted); }
+    .composer-footer button { border-radius:7px; font-size:11px; padding:5px 10px; }
+    .controls { margin-top:16px; padding:18px 20px; display:flex; flex-wrap:wrap; align-items:center; gap:22px; background:rgba(14,35,42,.85); border:1px solid rgba(226,241,239,.2); border-radius:14px; color:#e3eeec; }
+    .control { flex:1 1 140px; max-width:235px; }
+    .control label { display:flex; justify-content:space-between; font-size:11px; margin-bottom:8px; color:#c3d5d4; gap:14px; }
+    .control output { font-variant-numeric:tabular-nums; color:#ecf5ef; }
+    input[type="range"] { width:100%; height:4px; accent-color:#97d6d0; display:block; }
+    .actions { display:flex; flex-wrap:wrap; gap:8px; }
+    .actions button { font-size:11px; white-space:nowrap; --line:rgba(235,247,243,.22); --chip:rgba(232,246,240,.06); }
+    .actions .primary { background:#a5dcd5; }
+    .status { margin:10px 5px 0; color:#eff5f0; font-size:11px; line-height:1.8; }
+    .details { font-size:13px; line-height:2; }
+    .details li { margin-bottom:11px; }
+    .empty { color:var(--muted); }
+    @media (max-width:760px) { .page { width:calc(100% - 24px); margin-top:14px; } .window { grid-template-columns:155px minmax(0,1fr); } .sidebar { padding:22px 8px 16px; } .sidebar-heading { font-size:13px; padding:0 8px 24px; } .conversation { padding:27px 22px 15px; } .composer-wrap { padding:8px 20px 20px; } .glass-topbar { padding:0 20px; } h1 { font-size:24px; } .controls { gap:18px; } .control { max-width:none; } }
+    @media (max-width:530px) { .window { grid-template-columns:1fr; } .sidebar { display:none; } .conversation { padding:25px 20px 15px; } .identity span { font-size:9px; letter-spacing:1px; } .notice { font-size:11px; } .controls { padding:16px; } .actions { width:100%; } }
+    @media (prefers-reduced-motion:no-preference) { button { transition:background .15s ease; } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="identity"><strong>Codex Glass</strong><span>EXPERIMENTAL · 0.1</span></header>
+    <div class="notice" role="note" id="preview-notice"><strong>独立预览 / 非真实 Codex，桌面效果未验证。</strong> 背景为本页绘制的模拟壁纸；对话与控件均为本地测试内容。</div>
+    <div class="window">
+      <aside class="sidebar" data-glass-sidebar>
+        <div class="sidebar-heading"><i class="logo" aria-hidden="true"></i> Glass Studio</div>
+        <nav aria-label="预览导航">
+          <button class="nav-item" id="nav-conversation" aria-pressed="true"><span class="nav-icon" aria-hidden="true">◈</span>效果预览</button>
+          <button class="nav-item" id="nav-details" aria-pressed="false"><span class="nav-icon" aria-hidden="true">≡</span>使用说明</button>
+        </nav>
+        <div class="side-label">SAMPLE CONTENT</div>
+        <div class="sample">一扇安静的工作窗口</div>
+        <div class="sample">材质与可读性测试</div>
+        <div class="side-foot"><span class="live-dot"></span>本地演示 · 无网络连接</div>
+      </aside>
+      <main class="MainContentSurface" data-main-content>
+        <div class="glass-topbar">
+          <div class="crumb">实验预览<b>玻璃面板</b></div>
+          <div class="menu-wrap">
+            <button class="icon-button" id="menu-button" aria-label="预览菜单" aria-expanded="false" aria-controls="preview-menu">···</button>
+            <div class="menu" id="preview-menu" data-glass-popover hidden><button id="menu-details">查看测试范围</button><button id="menu-clear">清除新增测试消息</button></div>
+          </div>
+        </div>
+        <section class="conversation" id="conversation" aria-label="示例对话">
+          <div class="eyebrow">A QUIETER WORKSPACE</div>
+          <h1>让光透进工作里。</h1>
+          <p class="subtitle">在半透明材质上，检查文字、代码和日常操作是否清晰。</p>
+          <article class="message"><div class="speaker"><span class="avatar">你</span>示例提问</div><p>如果背景换了颜色，文字还能保持清楚吗？</p></article>
+          <article class="message"><div class="speaker"><span class="avatar">G</span>静态示例</div><p>拖动下方滑块，观察深色与浅色模式的阅读表现。较高的遮罩浓度能减少背景对文字的干扰。</p><pre><code><span class="code-comment">// 本地效果预览，不执行任务</span>
+<span class="code-key">glass</span> = { tint: <span class="code-key">0.16</span>, blur: <span class="code-key">22</span> }</code></pre></article>
+          <div id="local-messages" aria-live="polite"></div>
+        </section>
+        <section class="conversation details" id="details" hidden aria-label="使用说明"><div class="eyebrow">TEST BOUNDARIES</div><h1>这是材质测试页面。</h1><ul><li>浏览器预览使用模拟背景；它不能证明官方 Codex 窗口具有桌面透明效果。</li><li>独立原生测试壳使用 macOS 系统磨砂材质，仍然不是官方 Codex 应用。</li><li>输入框只把文字加到当前页面，刷新即清除；不登录、不发送请求、不读取聊天记录。</li><li>“恢复”用于撤销实验渲染器样式，再次“启用”可重新应用。</li></ul></section>
+        <div class="composer-wrap"><form class="composer" data-testid="composer" id="composer"><textarea aria-label="本地测试文字" placeholder="输入一段文字，测试玻璃面板上的阅读效果…" id="message-input" maxlength="2000"></textarea><div class="composer-footer"><span>仅追加到本页，不调用 AI</span><button type="submit" class="primary">添加测试文字 ↗</button></div></form></div>
+      </main>
+    </div>
+    <section class="controls" aria-label="材质控制">
+      <div class="control"><label for="tint">遮罩浓度 <output id="tint-value">16%</output></label><input type="range" id="tint" min="6" max="45" value="16" step="1"></div>
+      <div class="control"><label for="blur">页面模糊 <output id="blur-value">22 px</output></label><input type="range" id="blur" min="0" max="40" value="22" step="1"></div>
+      <div class="actions"><button id="theme-button" aria-pressed="false">切换浅色</button><button id="enable-button" class="primary">启用玻璃</button><button id="restore-button">恢复</button></div>
+    </section>
+    <p class="status" role="status" id="status">正在加载实验渲染器…</p>
+  </div>
+  <script src="../src/renderer.js"></script>
+  <script>
+    (() => {
+      'use strict';
+      const $ = id => document.getElementById(id);
+      const root = document.documentElement;
+      const api = globalThis.__codexGlassExperimental;
+      const native = globalThis.__codexGlassNativePreview === true;
+      let theme = 'dark';
+      let active = false;
+      root.dataset.fixtureTheme = theme;
+      if (native) {
+        root.classList.add('native-preview');
+        $('preview-notice').replaceChildren();
+        const strong = document.createElement('strong');
+        strong.textContent = '独立原生材质测试窗口，非官方 Codex。';
+        $('preview-notice').append(strong, ' 使用 macOS 系统磨砂材质；此测试不代表官方 Codex 已实现整窗透明。');
+      }
+      const options = () => ({ preview:true, tint:Number($('tint').value) / 100, blur:Number($('blur').value), theme });
+      const setStatus = message => { $('status').textContent = message; };
+      function apply() {
+        if (!api) { setStatus('渲染器未找到：请保留 demo 与 src 的相对目录结构。'); return; }
+        try {
+          const result = api.apply(options());
+          if (!result || result.applied !== true) throw new Error('实验样式未生效：' + (result?.styling || '状态未知'));
+          active = true;
+          setStatus(native ? '原生测试壳已启用实验样式。桌面磨砂由 macOS 提供；页面模糊滑块只作用于侧栏和顶栏。' : '独立页面已启用实验样式。模糊滑块只作用于侧栏和顶栏；模拟背景不代表真实桌面透明。');
+        } catch (error) { active = false; setStatus('启用失败：' + error.message); }
+      }
+      function update() {
+        $('tint-value').textContent = $('tint').value + '%';
+        $('blur-value').textContent = $('blur').value + ' px';
+        if (!active || !api) return;
+        try {
+          const result = api.update(options());
+          if (!result || result.applied !== true) throw new Error('实验样式未生效');
+        } catch (error) { setStatus('调整失败：' + error.message); }
+      }
+      function showDetails(value) {
+        $('conversation').hidden = value;
+        $('details').hidden = !value;
+        $('nav-conversation').setAttribute('aria-pressed', String(!value));
+        $('nav-details').setAttribute('aria-pressed', String(value));
+        $('preview-menu').hidden = true;
+        $('menu-button').setAttribute('aria-expanded', 'false');
+      }
+      $('tint').addEventListener('input', update);
+      $('blur').addEventListener('input', update);
+      $('enable-button').addEventListener('click', apply);
+      $('restore-button').addEventListener('click', () => {
+        try { if (api) api.restore(); active = false; setStatus('已恢复预览页面的原始样式；可再次启用玻璃效果。'); }
+        catch (error) { setStatus('恢复失败：' + error.message); }
+      });
+      $('theme-button').addEventListener('click', () => {
+        theme = theme === 'dark' ? 'light' : 'dark';
+        root.dataset.fixtureTheme = theme;
+        $('theme-button').textContent = theme === 'dark' ? '切换浅色' : '切换深色';
+        $('theme-button').setAttribute('aria-pressed', String(theme === 'light'));
+        if (native && window.webkit?.messageHandlers?.glassPreview) window.webkit.messageHandlers.glassPreview.postMessage({theme});
+        update();
+      });
+      $('nav-conversation').addEventListener('click', () => showDetails(false));
+      $('nav-details').addEventListener('click', () => showDetails(true));
+      $('menu-details').addEventListener('click', () => showDetails(true));
+      $('menu-button').addEventListener('click', () => {
+        const open = $('preview-menu').hidden;
+        $('preview-menu').hidden = !open;
+        $('menu-button').setAttribute('aria-expanded', String(open));
+      });
+      document.addEventListener('keydown', event => { if (event.key === 'Escape') { $('preview-menu').hidden = true; $('menu-button').setAttribute('aria-expanded', 'false'); } });
+      $('menu-clear').addEventListener('click', () => { $('local-messages').replaceChildren(); $('preview-menu').hidden = true; $('menu-button').setAttribute('aria-expanded', 'false'); setStatus('新增测试文字已清除。'); });
+      $('composer').addEventListener('submit', event => {
+        event.preventDefault();
+        const value = $('message-input').value.trim();
+        if (!value) return;
+        showDetails(false);
+        const article = document.createElement('article');
+        article.className = 'message';
+        const heading = document.createElement('div');
+        heading.className = 'speaker';
+        heading.textContent = '本地测试文字';
+        const p = document.createElement('p');
+        p.style.whiteSpace = 'pre-wrap';
+        p.textContent = value;
+        article.append(heading,p);
+        $('local-messages').append(article);
+        $('message-input').value = '';
+        setStatus('测试文字已追加到本页。未发送网络请求。');
+      });
+      apply();
+    })();
+  </script>
+</body>
+</html>

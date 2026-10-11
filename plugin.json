@@ -1,0 +1,22 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "codex-glass-experimental",
+  "version": "0.1.0-alpha.1",
+  "description": "Preview, export and diagnose experimental reversible glass styling for Codex. Native desktop transparency is unverified.",
+  "license": "MIT",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Codex Glass · 实验版",
+        "shortDescription": "玻璃样式预览、导出和恢复；官方窗口效果待实测",
+        "longDescription": "An experimental local styling workflow. Installing this plugin does not change the host UI. Native desktop transparency depends on the host and is not guaranteed.",
+        "category": "Developer Tools",
+        "capabilities": [],
+        "brandColor": "#305F6D",
+        "logo": "./assets/icon.svg",
+        "composerIcon": "./assets/icon.svg",
+        "screenshots": []
+      }
+    }
+  }
+}

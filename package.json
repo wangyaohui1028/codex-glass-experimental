@@ -1,0 +1,16 @@
+{
+  "name": "codex-glass-experimental",
+  "version": "0.1.0-alpha.1",
+  "private": true,
+  "description": "Experimental reversible glass styling for an explicitly selected Codex desktop renderer. Native desktop transparency is not guaranteed.",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "bin": { "codex-glass": "./bin/codex-glass.mjs" },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "check": "node --check src/renderer.js && node --check src/cdp.mjs && node --check src/bootstrap.mjs && node --check bin/codex-glass.mjs",
+    "preview": "node bin/codex-glass.mjs preview",
+    "export": "node bin/codex-glass.mjs export"
+  },
+  "license": "MIT"
+}
