@@ -17,6 +17,10 @@
 | 独立预览交互 | 已实际操作 | 深浅色、菜单展开/收起、中文输入并追加、浓度 16% → 26%、恢复后再启用 |
 | 插件 Skill 格式 | 通过 | skill-creator quick_validate |
 | 导出 | 通过 | 生成 apply.js 与 restore.js，全程未接入应用 |
+| GitHub 源码发布 | 已完成 | main 分支，19 个文件的 Git blob 哈希与本地一致 |
+| GitHub Actions | 通过 | Ubuntu，Node.js 22 / 24；语法检查、21 项测试和脚本导出 |
+
+源码提交：[a7f47de](https://github.com/wangyaohui1028/codex-glass-experimental/commit/a7f47de83ef76d93649f2cd37145e73edfc7e623)。云端验证：[Validate #1](https://github.com/wangyaohui1028/codex-glass-experimental/actions/runs/38144858582)，两个 Node.js 版本的任务均成功。此后本文件补记上述结果，不改变执行代码。
 
 原生预览是自行创建的 NSVisualEffectView + WKWebView 测试窗口。它只验证隔离页面的材质组合与基本交互。预览截图不包含真实对话，也不能充当官方窗口整窗透明的证据。没有对动态桌面透视或所有背景下的可读性做定量验收。
 
@@ -26,7 +30,7 @@
 - 官方客户端的桌面透视、动态磨砂、全屏、失焦、多显示器表现。
 - 具体发行版的开发者工具/CDP 可用性。此适配器不会替用户开启它们。
 - 在 Codex 插件目录中的实际安装；元数据与 Skill 的存在不代表宿主外观能力。
-- Node.js 22 与其它 macOS 版本的真实运行，CI 配置不等于 CI 已执行。
+- Node.js 22 在 macOS 上的真实运行，以及其它 macOS 版本。上述云端测试运行于 Ubuntu。
 - 独立 GitHub Release 和安装包发布。本仓库交付实验源码。
 
 本次执行环境明确禁止代理控制官方 Codex 应用，因此没有连接其运行时、注入样式、重签或修改安装包，也没有换用其它工具绕过限制。官方客户端只做了安装资源的只读静态研究，未复制其源码到此仓库。
